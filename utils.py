@@ -12,7 +12,7 @@ def clean_data(df):
     df = df[df['Lead Time'] >= 0]
     return df
 
-def feature_engineering(df, save=False, path="final_cleaned_data.csv"):
+def feature_engineering(df, save=True, path="final_cleaned_data.csv"):
     df['Route'] = df['Division'] + " → " + df['State/Province']
     df['Delayed'] = df['Lead Time'] > 5
     if save:
