@@ -5,7 +5,7 @@ from style import (inject_css, sidebar_brand, page_header, section_header,
 from data_manager import apply_filters
 from utils import route_analysis
 
-st.set_page_config(page_title="Route Analysis | Nassau Candy", layout="wide", page_icon="🗺️")
+st.set_page_config(page_title="Route Analysis | Nassau Candy", layout="wide", page_icon="🗺️",initial_sidebar_state="expanded")
 inject_css()
 sidebar_brand()
 
