@@ -31,7 +31,7 @@ html, body {
 
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
-header[data-testid="stHeader"] { visibility: hidden; }
+
 
 .block-container {
     padding: 1.5rem 2.5rem 3rem 2.5rem !important;
