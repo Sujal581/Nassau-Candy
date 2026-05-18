@@ -54,18 +54,21 @@ fig_map = px.choropleth(
     hover_data={'Shipments': True, 'Code': False},
     hover_name='State/Province'
 )
+fig_map.update_geos(
+    visible=False,
+    bgcolor='rgba(0,0,0,0)',
+    landcolor='#0B1120',
+    oceancolor='#070B14',
+    showocean=True,
+    scope='usa',
+    showlakes=True,
+    lakecolor='rgba(0,245,255,0.05)',
+    showcoastlines=True,
+    coastlinecolor='rgba(0,245,255,0.2)',
+    showsubunits=True,
+    subunitcolor='rgba(0,245,255,0.3)'
+)
 fig_map.update_layout(
-    geo=dict(
-        bgcolor='rgba(7,11,20,0)',
-        lakecolor='rgba(0,245,255,0.05)',
-        landcolor='rgba(17,24,39,0.8)',
-        showlakes=True,
-        showcoastlines=True,
-        coastlinecolor='rgba(0,245,255,0.2)',
-        countrycolor='rgba(0,245,255,0.2)',
-        showsubunits=True,
-        subunitcolor='rgba(0,245,255,0.15)'
-    ),
     coloraxis_colorbar=dict(
         bgcolor='rgba(11,17,32,0.8)',
         tickfont=dict(color='#94a3b8'),
