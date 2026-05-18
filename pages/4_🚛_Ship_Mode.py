@@ -6,7 +6,7 @@ from utils import ship_mode_analysis
 from style import (inject_css, sidebar_brand, page_header, section_header,
                    kpi_card, chart_label, insight_card, apply_plot_layout, footer, COLORS, COLOR_SEQ)
 
-st.set_page_config(page_title="Ship Mode | Nassau Candy", layout="wide", page_icon="🚛")
+st.set_page_config(page_title="Ship Mode | Nassau Candy", layout="wide", page_icon="🚛",initial_sidebar_state="expanded")
 inject_css()
 sidebar_brand()
 
