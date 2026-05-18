@@ -48,35 +48,49 @@ geo_map['Code'] = geo_map['State/Province'].map(us_state_abbrev)
 geo_map = geo_map.dropna(subset=['Code'])
 
 fig_map = px.choropleth(
-    geo_map, locations='Code', locationmode='USA-states', color='Avg_Lead_Time', scope='usa',
-    color_continuous_scale=[[0, '#1a3a5c'], [0.5, COLORS["amber"]], [1, COLORS["red"]]],
-    labels={'Avg_Lead_Time': 'Avg Lead (days)'},
-    hover_data={'Shipments': True, 'Code': False},
-    hover_name='State/Province'
+    geo_map,
+    locations='Code',
+    locationmode='USA-states',
+    color='Avg_Lead_Time',
+    scope='usa',
+    color_continuous_scale=[
+        [0, '#1a3a5c'],
+        [0.5, COLORS["amber"]],
+        [1, COLORS["red"]]
+    ],
+    labels={
+        'Avg_Lead_Time': 'Avg Lead (days)'
+    },
+    hover_name='State/Province',
+    hover_data={
+        'Shipments': True,
+        'Code': False
+    }
 )
+
+# FIX FOR STREAMLIT CLOUD
+fig_map.update_geos(
+    scope="usa",
+    visible=False,
+    fitbounds="locations"
+)
+
 fig_map.update_layout(
-    geo=dict(
-        bgcolor='rgba(7,11,20,0)',
-        lakecolor='rgba(0,245,255,0.05)',
-        landcolor='rgba(17,24,39,0.8)',
-        showlakes=True,
-        showcoastlines=True,
-        coastlinecolor='rgba(0,245,255,0.2)',
-        countrycolor='rgba(0,245,255,0.2)',
-        showsubunits=True,
-        subunitcolor='rgba(0,245,255,0.15)'
+    height=460,
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)',
+    margin=dict(l=0, r=0, t=10, b=0),
+    font=dict(
+        family='Inter, sans-serif',
+        color='#94a3b8'
     ),
     coloraxis_colorbar=dict(
         bgcolor='rgba(11,17,32,0.8)',
         tickfont=dict(color='#94a3b8'),
         title=dict(font=dict(color='#94a3b8'))
-    ),
-    height=460,
-    paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(0,0,0,0)',
-    margin=dict(l=0, r=0, t=10, b=0),
-    font=dict(family='Inter, sans-serif', color='#94a3b8')
+    )
 )
+
 st.plotly_chart(fig_map, use_container_width=True)
 
 section_header("State Performance Detail")
