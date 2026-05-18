@@ -6,7 +6,7 @@ from style import (inject_css, sidebar_brand, page_header, section_header,
                    kpi_card, chart_label, insight_card, apply_plot_layout, footer, COLORS)
 from utils import route_analysis, ship_mode_analysis
 
-st.set_page_config(page_title="Overview | Nassau Candy", layout="wide", page_icon="📊")
+st.set_page_config(page_title="Overview | Nassau Candy", layout="wide", page_icon="📊",initial_sidebar_state="expanded")
 inject_css()
 sidebar_brand()
 
