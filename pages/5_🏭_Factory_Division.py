@@ -6,7 +6,7 @@ from style import (inject_css, sidebar_brand, page_header, section_header,
                    footer, COLORS, COLOR_SEQ)
 from data_manager import apply_filters
 
-st.set_page_config(page_title="Factory & Division | Nassau Candy", layout="wide", page_icon="🏭")
+st.set_page_config(page_title="Factory & Division | Nassau Candy", layout="wide", page_icon="🏭",initial_sidebar_state="expanded")
 inject_css()
 sidebar_brand()
 
