@@ -108,10 +108,20 @@ with tab2:
             st.plotly_chart(fig_dist, use_container_width=True)
 
             stats = series.describe()
+            mean_val = stats.get("mean", 0)
+            std_val = stats.get("std", 0)
+            min_val = stats.get("min", 0)
+            max_val = stats.get("max", 0)
             stat_cols = st.columns(4)
+
             labels = ["Mean", "Std Dev", "Min", "Max"]
-            values = [f"{stats['mean']:.2f}", f"{stats['std']:.2f}",
-                      f"{stats['min']:.2f}", f"{stats['max']:.2f}"]
+
+            values = [
+                f"{mean_val:.2f}" if pd.notnull(mean_val) else "N/A",
+                f"{std_val:.2f}" if pd.notnull(std_val) else "N/A",
+                f"{min_val:.2f}" if pd.notnull(min_val) else "N/A",
+                f"{max_val:.2f}" if pd.notnull(max_val) else "N/A"
+            ]  
             colors = [COLORS["cyan"], COLORS["purple"], COLORS["green"], COLORS["red"]]
             for i, (lbl, val, col_c) in enumerate(zip(labels, values, colors)):
                 with stat_cols[i]:
