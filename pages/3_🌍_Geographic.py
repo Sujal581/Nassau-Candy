@@ -1,6 +1,7 @@
 import streamlit as st
 import plotly.express as px
 import numpy as np
+import plotly.graph_objects as go
 from style import (inject_css, sidebar_brand, page_header, section_header,
                    kpi_card, chart_label, insight_card, apply_plot_layout, footer, COLORS)
 from data_manager import apply_filters
