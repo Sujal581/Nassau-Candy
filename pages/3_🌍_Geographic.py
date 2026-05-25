@@ -43,44 +43,98 @@ us_state_abbrev = {
     'Tennessee':'TN','Texas':'TX','Utah':'UT','Vermont':'VT','Virginia':'VA','Washington':'WA',
     'West Virginia':'WV','Wisconsin':'WI','Wyoming':'WY',
 }
+valid_abbrevs = set(us_state_abbrev.values())
+
+def resolve_state_code(val):
+    if not isinstance(val, str):
+        return None
+    v = val.strip()
+    if v.upper() in valid_abbrevs:
+        return v.upper()
+    return us_state_abbrev.get(v.title())
+
 geo_map = geo.copy()
-geo_map['Code'] = geo_map['State/Province'].map(us_state_abbrev)
+geo_map['Code'] = geo_map['State/Province'].apply(resolve_state_code)
 geo_map = geo_map.dropna(subset=['Code'])
 
-fig_map = px.choropleth(
-    geo_map, locations='Code', locationmode='USA-states', color='Avg_Lead_Time', scope='usa',
-    color_continuous_scale=[[0, '#1a3a5c'], [0.5, COLORS["amber"]], [1, COLORS["red"]]],
-    labels={'Avg_Lead_Time': 'Avg Lead (days)'},
-    hover_data={'Shipments': True, 'Code': False},
-    hover_name='State/Province'
-)
-fig_map.update_geos(
-    visible=False,
-    bgcolor='rgba(0,0,0,0)',
-    landcolor='#0B1120',
-    oceancolor='#070B14',
-    showocean=True,
-    scope='usa',
-    showlakes=True,
-    lakecolor='rgba(0,245,255,0.05)',
-    showcoastlines=True,
-    coastlinecolor='rgba(0,245,255,0.2)',
-    showsubunits=True,
-    subunitcolor='rgba(0,245,255,0.3)'
-)
-fig_map.update_layout(
-    coloraxis_colorbar=dict(
-        bgcolor='rgba(11,17,32,0.8)',
+# Statebins grid layout — geographic approximation, no geo engine needed
+STATE_GRID = {
+    'AK': (0, 0),  'ME': (0, 10),
+    'VT': (1, 9),  'NH': (1, 10),
+    'WA': (2, 0),  'ID': (2, 1),  'MT': (2, 2),  'ND': (2, 3),  'MN': (2, 4),
+    'WI': (2, 5),  'MI': (2, 6),  'NY': (2, 8),  'MA': (2, 9),
+    'OR': (3, 0),  'NV': (3, 1),  'WY': (3, 2),  'SD': (3, 3),  'IA': (3, 4),
+    'IL': (3, 5),  'IN': (3, 6),  'OH': (3, 7),  'PA': (3, 8),  'NJ': (3, 9),  'CT': (3, 10),
+    'CA': (4, 0),  'UT': (4, 1),  'CO': (4, 2),  'NE': (4, 3),  'MO': (4, 4),
+    'KY': (4, 5),  'WV': (4, 6),  'VA': (4, 7),  'MD': (4, 8),  'DE': (4, 9),  'RI': (4, 10),
+    'AZ': (5, 1),  'NM': (5, 2),  'KS': (5, 3),  'AR': (5, 4),  'TN': (5, 5),
+    'NC': (5, 6),  'SC': (5, 7),
+    'OK': (6, 3),  'LA': (6, 4),  'MS': (6, 5),  'AL': (6, 6),  'GA': (6, 7),  'FL': (6, 8),
+    'HI': (7, 0),  'TX': (7, 2),
+}
+
+ROWS, COLS = 8, 11
+grid_z     = np.full((ROWS, COLS), np.nan)
+grid_text  = [['' for _ in range(COLS)] for _ in range(ROWS)]
+grid_hover = [['' for _ in range(COLS)] for _ in range(ROWS)]
+
+state_lookup = {
+    row['Code']: (row['Avg_Lead_Time'], int(row['Shipments']), row['State/Province'])
+    for _, row in geo_map.iterrows()
+}
+
+for code, (r, c) in STATE_GRID.items():
+    grid_text[r][c] = code
+    if code in state_lookup:
+        lt, sh, name = state_lookup[code]
+        grid_z[r][c] = lt
+        grid_hover[r][c] = f'<b>{name} ({code})</b><br>Avg Lead: {lt:.1f} days<br>Shipments: {sh:,}'
+    else:
+        grid_hover[r][c] = f'<b>{code}</b><br>No data'
+
+# Flip so north (row 0) appears at the top
+z_display     = grid_z[::-1].tolist()
+text_display  = grid_text[::-1]
+hover_display = grid_hover[::-1]
+
+fig_map = go.Figure(go.Heatmap(
+    z=z_display,
+    text=text_display,
+    hovertext=hover_display,
+    texttemplate='%{text}',
+    textfont=dict(size=10, color='white', family='Inter, sans-serif'),
+    colorscale=[
+        [0,   '#00e5ff'],
+        [0.5, COLORS["amber"]],
+        [1,   COLORS["red"]],
+    ],
+    showscale=True,
+    colorbar=dict(
+        title=dict(text='Avg Lead (days)', font=dict(color='#94a3b8', size=11)),
         tickfont=dict(color='#94a3b8'),
-        title=dict(font=dict(color='#94a3b8'))
+        bgcolor='rgba(11,17,32,0.85)',
+        thickness=14,
     ),
-    height=460,
-    paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(0,0,0,0)',
-    margin=dict(l=0, r=0, t=10, b=0),
-    font=dict(family='Inter, sans-serif', color='#94a3b8')
+    xgap=4,
+    ygap=4,
+    hovertemplate='%{hovertext}<extra></extra>',
+))
+
+fig_map.update_layout(
+    height=430,
+    paper_bgcolor='#0B1120',
+    plot_bgcolor='#0B1120',
+    margin=dict(l=10, r=10, t=10, b=10),
+    font=dict(family='Inter, sans-serif', color='#94a3b8'),
+    xaxis=dict(showticklabels=False, showgrid=False, zeroline=False, ticks=''),
+    yaxis=dict(showticklabels=False, showgrid=False, zeroline=False, ticks=''),
 )
+
 st.plotly_chart(fig_map, use_container_width=True)
+
+if geo_map.empty:
+    st.info("No states matched — raw values from your data:")
+    st.write(geo[['State/Province']].head(20))
 
 section_header("State Performance Detail")
 cl, cr = st.columns([3, 2])
