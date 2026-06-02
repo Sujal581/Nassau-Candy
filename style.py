@@ -32,13 +32,48 @@ html, body {
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 
+header,
+header[data-testid="stHeader"],
+[data-testid="stHeader"],
+.stApp > header,
+div[class*="stAppHeader"],
+div[class*="AppHeader"],
+[data-testid="stAppViewContainer"] > header {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+header::before,
+header::after,
+[data-testid="stHeader"]::before,
+[data-testid="stHeader"]::after {
+    background: transparent !important;
+    display: none !important;
+}
+
+[data-testid="stToolbar"],
+[data-testid="stToolbarActions"],
+[data-testid="stStatusWidget"] {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+[data-testid="stDecoration"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+}
 
 .block-container {
     padding: 1.5rem 2.5rem 3rem 2.5rem !important;
     max-width: 1440px !important;
 }
 
-/* ─── SIDEBAR ─────────────────────────────────── */
 [data-testid="stSidebar"] {
     background: linear-gradient(180deg, #08101F 0%, #050C18 100%) !important;
     border-right: 1px solid rgba(0,245,255,0.12) !important;
@@ -84,7 +119,6 @@ footer { visibility: hidden; }
 
 [data-testid="collapsedControl"] { display: flex !important; visibility: visible !important; }
 
-/* ─── HEADINGS with ORBITRON ─────────────────── */
 h1, h2, h3,
 [data-testid="stMarkdownContainer"] h1,
 [data-testid="stMarkdownContainer"] h2,
@@ -114,7 +148,6 @@ h3, [data-testid="stMarkdownContainer"] h3 {
 
 p, li { color: #94a3b8; line-height: 1.7; }
 
-/* ─── KPI CARDS ──────────────────────────────── */
 .nc-kpi-card {
     background: linear-gradient(135deg, rgba(13,20,35,0.95) 0%, rgba(8,14,26,0.95) 100%);
     border: 1px solid rgba(255,255,255,0.04);
@@ -136,15 +169,9 @@ p, li { color: #94a3b8; line-height: 1.7; }
     pointer-events: none;
 }
 
-.nc-kpi-card:hover {
-    transform: translateY(-3px);
-}
+.nc-kpi-card:hover { transform: translateY(-3px); }
 
-.nc-kpi-icon {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    display: block;
-}
+.nc-kpi-icon { font-size: 1.2rem; margin-bottom: 0.5rem; display: block; }
 
 .nc-kpi-label {
     font-family: 'Rajdhani', sans-serif !important;
@@ -173,7 +200,6 @@ p, li { color: #94a3b8; line-height: 1.7; }
     display: block;
 }
 
-/* ─── SECTION HEADERS ────────────────────────── */
 .nc-section-header {
     font-family: 'Orbitron', monospace !important;
     font-size: 0.72rem;
@@ -187,7 +213,6 @@ p, li { color: #94a3b8; line-height: 1.7; }
     text-shadow: 0 0 10px rgba(0,245,255,0.4);
 }
 
-/* ─── CHART LABELS ───────────────────────────── */
 .nc-chart-label {
     font-family: 'Rajdhani', sans-serif !important;
     font-size: 0.92rem;
@@ -205,7 +230,6 @@ p, li { color: #94a3b8; line-height: 1.7; }
     margin-bottom: 0.5rem;
 }
 
-/* ─── INSIGHT CARDS ──────────────────────────── */
 .nc-insight {
     border-left: 3px solid;
     border-radius: 8px;
@@ -217,7 +241,6 @@ p, li { color: #94a3b8; line-height: 1.7; }
     backdrop-filter: blur(4px);
 }
 
-/* ─── STREAMLIT METRICS ──────────────────────── */
 [data-testid="stMetric"] {
     background: linear-gradient(135deg, rgba(13,20,35,0.95), rgba(8,14,26,0.95)) !important;
     border: 1px solid rgba(0,245,255,0.08) !important;
@@ -244,7 +267,6 @@ p, li { color: #94a3b8; line-height: 1.7; }
     color: #f1f5f9 !important;
 }
 
-/* ─── BUTTONS ────────────────────────────────── */
 .stButton > button {
     font-family: 'Rajdhani', sans-serif !important;
     font-weight: 700 !important;
@@ -267,7 +289,6 @@ p, li { color: #94a3b8; line-height: 1.7; }
     text-shadow: 0 0 8px rgba(0,245,255,0.5) !important;
 }
 
-/* ─── INPUTS ─────────────────────────────────── */
 .stTextInput > div > div > input,
 .stDateInput > div > div > input {
     background: rgba(8,14,26,0.9) !important;
@@ -285,21 +306,18 @@ p, li { color: #94a3b8; line-height: 1.7; }
     color: #f1f5f9 !important;
 }
 
-/* ─── DATAFRAME ──────────────────────────────── */
 [data-testid="stDataFrame"] {
     border: 1px solid rgba(0,245,255,0.08) !important;
     border-radius: 10px !important;
     overflow: hidden !important;
 }
 
-/* ─── EXPANDER ───────────────────────────────── */
 [data-testid="stExpander"] {
     background: rgba(8,14,26,0.8) !important;
     border: 1px solid rgba(0,245,255,0.08) !important;
     border-radius: 10px !important;
 }
 
-/* ─── TABS ───────────────────────────────────── */
 .stTabs [data-baseweb="tab-list"] {
     background: rgba(8,14,26,0.9);
     border-radius: 8px;
@@ -327,7 +345,6 @@ p, li { color: #94a3b8; line-height: 1.7; }
     text-shadow: 0 0 8px rgba(0,245,255,0.4) !important;
 }
 
-/* ─── DOWNLOAD BUTTON ────────────────────────── */
 .stDownloadButton > button {
     font-family: 'Rajdhani', sans-serif !important;
     font-weight: 700 !important;
@@ -345,7 +362,6 @@ p, li { color: #94a3b8; line-height: 1.7; }
     box-shadow: 0 0 12px rgba(59,130,246,0.2) !important;
 }
 
-/* ─── ALERTS ─────────────────────────────────── */
 .stSuccess {
     background: rgba(16,185,129,0.07) !important;
     border: 1px solid rgba(16,185,129,0.2) !important;
@@ -373,13 +389,11 @@ hr {
     margin: 1.5rem 0 !important;
 }
 
-/* ─── SCROLLBAR ──────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: #070B14; }
 ::-webkit-scrollbar-thumb { background: rgba(0,245,255,0.25); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0,245,255,0.45); }
 
-/* ─── FILE UPLOADER ──────────────────────────── */
 [data-testid="stFileUploader"] {
     background: rgba(8,14,26,0.8) !important;
     border: 1px dashed rgba(0,245,255,0.2) !important;
@@ -387,7 +401,6 @@ hr {
     padding: 1rem !important;
 }
 
-/* ─── SLIDER ─────────────────────────────────── */
 [data-testid="stSlider"] [role="slider"] {
     background: #00F5FF !important;
     box-shadow: 0 0 8px rgba(0,245,255,0.6) !important;
@@ -518,6 +531,23 @@ def insight_card(text: str, kind: str = "info"):
         f'<div class="nc-insight" style="border-color:{bc};background:{bg};">{text}</div>',
         unsafe_allow_html=True
     )
+
+
+def chart_note(text: str):
+    st.markdown(f"""
+        <div style="font-family:'Inter',sans-serif;
+                    font-size:0.76rem;
+                    color:#FFFFFF;
+                    margin-top:-0.1rem;
+                    margin-bottom:0.9rem;
+                    line-height:1.55;
+                    padding:0.45rem 0.75rem;
+                    border-left:2px solid rgba(0,245,255,0.18);
+                    background:rgba(0,245,255,0.02);
+                    border-radius:0 4px 4px 0;">
+            {text}
+        </div>
+    """, unsafe_allow_html=True)
 
 
 def apply_plot_layout(fig, height: int = 380):
