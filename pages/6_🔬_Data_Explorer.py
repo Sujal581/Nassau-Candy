@@ -2,10 +2,11 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from style import (inject_css, sidebar_brand, page_header, section_header,
-                   kpi_card, chart_label, insight_card, apply_plot_layout, footer, COLORS, COLOR_SEQ)
+                   kpi_card, chart_label, chart_note, insight_card, apply_plot_layout, footer, COLORS, COLOR_SEQ)
 from data_manager import apply_filters
 
-st.set_page_config(page_title="Data Explorer | Nassau Candy", layout="wide", page_icon="🔬",initial_sidebar_state="expanded")
+st.set_page_config(page_title="Data Explorer | Nassau Candy", layout="wide", page_icon="🔬",
+                   initial_sidebar_state="expanded")
 inject_css()
 sidebar_brand()
 
@@ -20,9 +21,9 @@ if df.empty:
     st.warning("No data matches the current filters.")
     st.stop()
 
-total_rows = len(df)
-total_cols = df.shape[1]
-missing = df.isnull().sum().sum()
+total_rows  = len(df)
+total_cols  = df.shape[1]
+missing     = df.isnull().sum().sum()
 missing_pct = (missing / (total_rows * total_cols)) * 100
 
 c1, c2, c3, c4 = st.columns(4)
@@ -54,12 +55,11 @@ with tab1:
         f"Showing <strong>{min(rows_to_show, len(display_df)):,}</strong> of "
         f"<strong>{len(display_df):,}</strong> matching records.", "info"
     )
-
     st.download_button(
         "Download Filtered Data",
         data=display_df.to_csv(index=False),
         file_name="nassau_filtered_data.csv",
-        mime="text/csv"
+        mime="text/csv",
     )
 
 with tab2:
@@ -98,123 +98,111 @@ with tab2:
         st.markdown("<br>", unsafe_allow_html=True)
 
         if pd.api.types.is_numeric_dtype(series):
-            fig_dist = px.histogram(
-                df, x=col_select, nbins=40,
-                color_discrete_sequence=[COLORS["cyan"]],
-                marginal="box"
-            )
+            fig_dist = px.histogram(df, x=col_select, nbins=40,
+                                    color_discrete_sequence=[COLORS["cyan"]], marginal="box")
             fig_dist.update_traces(marker_line_color="rgba(7,11,20,0.8)", marker_line_width=1)
             apply_plot_layout(fig_dist, 380)
             st.plotly_chart(fig_dist, use_container_width=True)
+            chart_note("The histogram shows value distribution; the box plot above it highlights median, quartiles, and outliers. A symmetric bell shape is typical for well-distributed data — a long right tail indicates high-value outliers worth investigating.")
 
             stats = series.describe()
-            mean_val = stats.get("mean", 0)
-            std_val = stats.get("std", 0)
-            min_val = stats.get("min", 0)
-            max_val = stats.get("max", 0)
             stat_cols = st.columns(4)
-
             labels = ["Mean", "Std Dev", "Min", "Max"]
-
-            values = [
-                f"{mean_val:.2f}" if pd.notnull(mean_val) else "N/A",
-                f"{std_val:.2f}" if pd.notnull(std_val) else "N/A",
-                f"{min_val:.2f}" if pd.notnull(min_val) else "N/A",
-                f"{max_val:.2f}" if pd.notnull(max_val) else "N/A"
-            ]  
+            vals   = [stats.get("mean", 0), stats.get("std", 0), stats.get("min", 0), stats.get("max", 0)]
             colors = [COLORS["cyan"], COLORS["purple"], COLORS["green"], COLORS["red"]]
-            for i, (lbl, val, col_c) in enumerate(zip(labels, values, colors)):
-                with stat_cols[i]:
+            for lbl, val, col_c in zip(labels, vals, colors):
+                with stat_cols[labels.index(lbl)]:
+                    v = f"{val:.2f}" if pd.notnull(val) else "N/A"
                     st.markdown(f"""
                         <div style="background:rgba(17,24,39,0.8);border-left:3px solid {col_c};
                                     border-radius:8px;padding:0.75rem;text-align:center;">
                             <div style="font-size:0.68rem;color:#475569;text-transform:uppercase;letter-spacing:0.08em;">{lbl}</div>
-                            <div style="font-family:'Orbitron',sans-serif;font-size:1.1rem;color:{col_c};font-weight:700;margin-top:0.25rem;">{val}</div>
+                            <div style="font-family:'Orbitron',sans-serif;font-size:1.1rem;color:{col_c};font-weight:700;margin-top:0.25rem;">{v}</div>
                         </div>
                     """, unsafe_allow_html=True)
         else:
             vc = series.value_counts().head(20).reset_index()
-            vc.columns = [col_select, 'Count']
-            fig_bar = px.bar(
-                vc, x=col_select, y='Count',
-                color='Count',
-                color_continuous_scale=[[0, '#1a3a5c'], [1, COLORS["cyan"]]]
-            )
+            vc.columns = [col_select, "Count"]
+            fig_bar = px.bar(vc, x=col_select, y="Count",
+                             color="Count",
+                             color_continuous_scale=[[0, "#1a3a5c"], [1, COLORS["cyan"]]])
             fig_bar.update_layout(coloraxis_showscale=False, xaxis_tickangle=-30)
             apply_plot_layout(fig_bar, 380)
             st.plotly_chart(fig_bar, use_container_width=True)
+            chart_note("Top 20 most frequent values in this column. A single dominant value may indicate data entry patterns or business concentration risk. A very even distribution suggests a well-spread categorical variable.")
 
 with tab3:
     section_header("Correlation Analysis")
-    numeric_cols = df.select_dtypes(include='number').columns.tolist()
+    numeric_cols = df.select_dtypes(include="number").columns.tolist()
     if len(numeric_cols) >= 2:
         chart_label("Correlation Matrix", "Pearson correlation between numeric columns")
         corr = df[numeric_cols].corr()
         fig_corr = px.imshow(
-            corr, text_auto='.2f',
-            color_continuous_scale=[[0, COLORS["red"]], [0.5, '#1a3a5c'], [1, COLORS["cyan"]]],
-            zmin=-1, zmax=1
+            corr, text_auto=".2f",
+            color_continuous_scale=[[0, COLORS["red"]], [0.5, "#1a3a5c"], [1, COLORS["cyan"]]],
+            zmin=-1, zmax=1,
         )
-        fig_corr.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+        fig_corr.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
         apply_plot_layout(fig_corr, 480)
         st.plotly_chart(fig_corr, use_container_width=True)
+        chart_note("Values close to +1 (cyan) mean a strong positive relationship — both columns increase together. Values close to -1 (red) mean an inverse relationship. Values near 0 indicate no linear relationship between those two columns.")
 
         col_x = st.selectbox("X Axis", numeric_cols, index=0, key="scatter_x")
-        col_y = st.selectbox("Y Axis", numeric_cols, index=min(1, len(numeric_cols)-1), key="scatter_y")
+        col_y = st.selectbox("Y Axis", numeric_cols, index=min(1, len(numeric_cols) - 1), key="scatter_y")
         if col_x != col_y:
             chart_label(f"{col_x} vs {col_y}", "Scatter relationship")
-            color_by = None
-            if 'Ship Mode' in df.columns:
-                color_by = 'Ship Mode'
+            color_by = "Ship Mode" if "Ship Mode" in df.columns else None
             fig_sc = px.scatter(
                 df.sample(min(2000, len(df))),
                 x=col_x, y=col_y,
                 color=color_by,
                 color_discrete_sequence=COLOR_SEQ,
-                opacity=0.6
+                opacity=0.6,
             )
             apply_plot_layout(fig_sc, 400)
             st.plotly_chart(fig_sc, use_container_width=True)
+            chart_note("A random scatter with no visible pattern means the two columns are likely independent. A clear diagonal or curve suggests a predictive relationship — useful for building lead time forecasting models.")
     else:
         insight_card("Not enough numeric columns for correlation analysis.", "info")
 
 with tab4:
     section_header("Statistical Summary")
-    numeric_df = df.select_dtypes(include='number')
+    numeric_df = df.select_dtypes(include="number")
     if not numeric_df.empty:
-        stats_display = numeric_df.describe().T
-        stats_display = stats_display.round(2)
+        stats_display = numeric_df.describe().T.round(2)
         st.dataframe(
             stats_display.style
-                .background_gradient(cmap='Blues', subset=['mean'])
-                .background_gradient(cmap='Oranges', subset=['std'])
-                .format('{:.2f}'),
-            use_container_width=True, height=400
+                .background_gradient(cmap="Blues", subset=["mean"])
+                .background_gradient(cmap="Oranges", subset=["std"])
+                .format("{:.2f}"),
+            use_container_width=True, height=400,
         )
+        chart_note("Descriptive statistics for all numeric columns. High std (standard deviation) relative to the mean signals wide variability — useful for identifying columns where outlier filtering might be needed before analysis.")
 
     section_header("Missing Value Report")
     missing_df = pd.DataFrame({
-        'Column': df.columns,
-        'Missing Count': df.isnull().sum().values,
-        'Missing %': (df.isnull().sum().values / len(df) * 100).round(1)
-    }).sort_values('Missing %', ascending=False)
-    missing_df = missing_df[missing_df['Missing Count'] > 0]
+        "Column":        df.columns,
+        "Missing Count": df.isnull().sum().values,
+        "Missing %":     (df.isnull().sum().values / len(df) * 100).round(1),
+    }).sort_values("Missing %", ascending=False)
+    missing_df = missing_df[missing_df["Missing Count"] > 0]
 
     if len(missing_df) > 0:
         st.dataframe(
             missing_df.style
-                .background_gradient(subset=['Missing %'], cmap='Reds')
-                .format({'Missing %': '{:.1f}%'}),
-            use_container_width=True
+                .background_gradient(subset=["Missing %"], cmap="Reds")
+                .format({"Missing %": "{:.1f}%"}),
+            use_container_width=True,
         )
         fig_miss = px.bar(
-            missing_df, x='Column', y='Missing %',
-            color='Missing %',
-            color_continuous_scale=[[0, COLORS["amber"]], [1, COLORS["red"]]]
+            missing_df, x="Column", y="Missing %",
+            color="Missing %",
+            color_continuous_scale=[[0, COLORS["amber"]], [1, COLORS["red"]]],
         )
         fig_miss.update_layout(coloraxis_showscale=False, xaxis_tickangle=-30)
         apply_plot_layout(fig_miss, 300)
         st.plotly_chart(fig_miss, use_container_width=True)
+        chart_note("Columns with high missing % can bias aggregations and skew KPIs. Consider imputing, excluding, or flagging these columns before drawing operational conclusions from the data.")
     else:
         insight_card("No missing values detected. Dataset is complete.", "success")
 
