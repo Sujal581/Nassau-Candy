@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import io
-from style import inject_css, sidebar_brand, page_header, kpi_card, section_header, insight_card, footer, COLORS, apply_plot_layout, chart_label
+from style import (inject_css, sidebar_brand, page_header, kpi_card, section_header,
+                   insight_card, footer, COLORS, apply_plot_layout, chart_label, chart_note)
 from data_manager import _parse_csv
 
 st.set_page_config(
@@ -87,6 +88,7 @@ if "master_df" in st.session_state:
             fig_trend.update_yaxes(title="")
             apply_plot_layout(fig_trend, 280)
             st.plotly_chart(fig_trend, use_container_width=True)
+            chart_note("Peaks reveal high-demand periods that may strain logistics capacity — useful for planning carrier headcount and inventory buffers ahead of time.")
 
     with cr:
         chart_label("On-Time vs Delayed", "Overall shipment split")
@@ -106,6 +108,7 @@ if "master_df" in st.session_state:
             )
             apply_plot_layout(fig_pie, 280)
             st.plotly_chart(fig_pie, use_container_width=True)
+            chart_note("A healthy operation targets ≥70% on-time. This ratio updates instantly when you adjust the delay threshold slider in the sidebar.")
 
     section_header("Performance Snapshot")
 
@@ -119,6 +122,7 @@ if "master_df" in st.session_state:
             fig_hist.update_traces(marker_line_color="rgba(7,11,20,0.8)", marker_line_width=1)
             apply_plot_layout(fig_hist, 260)
             st.plotly_chart(fig_hist, use_container_width=True)
+            chart_note("A tight, left-skewed curve indicates consistently fast fulfillment. A long right tail signals problem orders pulling up the average — investigate those outliers first.")
 
     with s2:
         chart_label("Top Routes by Volume", "Shipment count per route")
@@ -132,6 +136,7 @@ if "master_df" in st.session_state:
             fig_bar.update_layout(coloraxis_showscale=False, yaxis_title="")
             apply_plot_layout(fig_bar, 260)
             st.plotly_chart(fig_bar, use_container_width=True)
+            chart_note("High-volume routes benefit most from rate negotiations and dedicated carrier lanes. Low-volume routes may be candidates for consolidation.")
 
     col_a, col_b = st.columns([1, 4])
     with col_a:
